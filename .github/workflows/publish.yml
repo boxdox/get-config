@@ -86,7 +86,7 @@ jobs:
 
   publish:
     name: Publish
-    needs: [dist]
+    needs: [ build ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources

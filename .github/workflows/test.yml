@@ -2,9 +2,11 @@ name: test
 
 on:
   push:
-    branches: [ main ]
+    branches-ignore:
+      - main
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   test:
@@ -15,4 +17,3 @@ jobs:
         run: cargo build
       - name: test
         run: cargo test --verbose
-      
