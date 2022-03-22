@@ -16,7 +16,7 @@ fn write_file(file_path: PathBuf, content: &str) -> Result<(), io::Error> {
 
 pub async fn select_and_write_files(
     files_list: &Files,
-    token: &String,
+    token: &str,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let options = files_list.keys().cloned().collect();
     let selected = MultiSelect::new("select files:", options).prompt()?;

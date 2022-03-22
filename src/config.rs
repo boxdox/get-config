@@ -1,20 +1,11 @@
-use confy;
+
 use inquire::{error::InquireError, Text};
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Default, Debug, Serialize, Deserialize)]
 pub struct Config {
     pub gist_id: Option<String>,
     pub token: Option<String>,
-}
-
-impl ::std::default::Default for Config {
-    fn default() -> Self {
-        Self {
-            gist_id: None,
-            token: None,
-        }
-    }
 }
 
 pub fn get_config(package_name: &str) -> Result<Config, InquireError> {
@@ -25,7 +16,7 @@ pub fn get_config(package_name: &str) -> Result<Config, InquireError> {
             Text::new("please enter a gist_id (this will be saved into a config file)").prompt()?;
         cfg.gist_id = Some(gist_id);
         let token = Text::new("enter a token for github (optional)")
-            .with_default("".into())
+            .with_default("")
             .prompt()?;
         cfg.token = Some(token);
         confy::store(package_name, &cfg).unwrap();

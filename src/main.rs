@@ -12,13 +12,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let package_name = env!("CARGO_PKG_NAME");
 
     // check if `init` is passed, if yes, reset the config
-    match env::args().nth(1) {
-        Some(arg) => {
-            if arg.eq("init") {
-                clear_config(package_name)?;
-            }
+    if let Some(arg) = env::args().nth(1) {
+        if arg.eq("init") {
+            clear_config(package_name)?;
         }
-        None => {}
     };
 
     let cfg = get_config(package_name)?;
@@ -27,7 +24,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("fetching gist {}", gist_id);
 
-    let files  = fetch_gist(&gist_id, Some(&token)).await?;
+    let files = fetch_gist(&gist_id, Some(&token)).await?;
 
     select_and_write_files(&files, &token).await?;
 

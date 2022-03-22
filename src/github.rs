@@ -41,7 +41,7 @@ fn time_difference(older: u64) -> String {
         .unwrap()
         .as_secs();
     if older < start {
-        return format!("undefined time");
+        return "undefined time".to_string();
     }
     let diff = older - start;
     format!("{}m {}s", diff / 60, diff % 60)
@@ -75,14 +75,14 @@ async fn parse_github_response(response: Response) -> Result<Files, String> {
             if request_limit <= 0 {
                 let time_until_reset = parse_header_value(headers, "x-ratelimit-reset", 0);
                 let msg = format!("uh oh, looks like your github api quota has expired. use a token or wait for {}", time_difference(time_until_reset as u64));
-                return Err(msg);
+                Err(msg)
             } else {
-                return Err("github sent 403 :( try using a token".to_string());
+                Err("github sent 403 :( try using a token".to_string())
             }
         }
         200 => match response.json::<GithubResponse>().await {
             Ok(res) => {
-                return Ok(res.files);
+                Ok(res.files)
             }
             Err(err) => {
                 return Err(format!(
@@ -92,7 +92,7 @@ async fn parse_github_response(response: Response) -> Result<Files, String> {
             }
         },
         _ => {
-            return Err(
+            Err(
                 "unknown error occurred while parsing response, please open an issue".to_string(),
             )
         }
