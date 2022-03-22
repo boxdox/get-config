@@ -57,9 +57,9 @@ fn setup_request_client(token: Option<&str>) -> Result<Client, Error> {
     );
 
     // add token as header
-    if token.is_some() {
-        let header_value =
-            HeaderValue::from_str(format!("token {}", token.unwrap()).as_str()).unwrap();
+    let token = token.unwrap_or("");
+    if !token.is_empty() {
+        let header_value = HeaderValue::from_str(format!("token {}", token).as_str()).unwrap();
         headers.insert(header::AUTHORIZATION, header_value);
     }
 

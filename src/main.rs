@@ -1,8 +1,10 @@
 mod config;
 mod github;
+mod writer;
 
 use crate::config::{clear_config, get_config};
 use crate::github::fetch_gist;
+use crate::writer::select_and_write_files;
 use std::env;
 
 #[tokio::main]
@@ -23,9 +25,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let gist_id = cfg.gist_id.unwrap();
     let token = cfg.token.unwrap();
 
-    let response = fetch_gist(&gist_id, Some(&token)).await?;
+    println!("fetching gist {}", gist_id);
 
-    dbg!(response.keys());
+    let files  = fetch_gist(&gist_id, Some(&token)).await?;
+
+    select_and_write_files(&files, &token).await?;
 
     Ok(())
 }
