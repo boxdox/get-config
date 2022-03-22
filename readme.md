@@ -1,6 +1,18 @@
 # get-configs
 pull your dot configs from a version controlled gists.
 
+### usage
+download the corresponding binary and run:
+```
+get-config
+```
+it will ask for `gist_id` and optionally a github `token`. these settings will be saved in your home directory (appdata in windows). from then on, it will read from this config file.
+
+if you want to reset this config, you can pass `init` flag, like this:
+```
+get-config init
+```
+
 ### why?
 i was tired of copying my javascript configurations each time i started a new project.
 i wanted a way to selectively pull some of my configs, from a interactive cli.
