@@ -1,6 +1,6 @@
-
 use inquire::{error::InquireError, Text};
 use serde::{Deserialize, Serialize};
+use std::process;
 
 #[derive(Default, Debug, Serialize, Deserialize)]
 pub struct Config {
@@ -14,6 +14,10 @@ pub fn get_config(package_name: &str) -> Result<Config, InquireError> {
     if cfg.gist_id.is_none() {
         let gist_id =
             Text::new("please enter a gist_id (this will be saved into a config file)").prompt()?;
+        if gist_id.is_empty() {
+            eprintln!("gist id is empty, cannot proceed. re-run this command and enter a valid gist id");
+            process::exit(1);
+        }
         cfg.gist_id = Some(gist_id);
         let token = Text::new("enter a token for github (optional)")
             .with_default("")

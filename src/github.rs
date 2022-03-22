@@ -80,6 +80,9 @@ async fn parse_github_response(response: Response) -> Result<Files, String> {
                 Err("github sent 403 :( try using a token".to_string())
             }
         }
+        404 => {
+            Err("uh oh, looks like gist id not found".to_string())
+        }
         200 => match response.json::<GithubResponse>().await {
             Ok(res) => {
                 Ok(res.files)
