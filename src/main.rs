@@ -26,7 +26,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let files = fetch_gist(&gist_id, Some(&token)).await?;
 
-    select_and_write_files(&files, &token).await?;
+    // in rare case, files list can be empty, return early
+    if files.is_empty() {
+        eprintln!(
+            "looks like there are no files in this gist, try with a different gist with `{} init`",
+            &package_name
+        );
+        return Ok(());
+    }
+
+    select_and_write_files(files, &token).await?;
 
     Ok(())
 }

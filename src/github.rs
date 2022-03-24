@@ -3,11 +3,11 @@ use reqwest::{
     Client, Error, Response,
 };
 use serde::Deserialize;
-use std::{collections::HashMap, time::SystemTime};
+use std::{time::SystemTime, collections::BTreeMap};
 
-pub type Files = HashMap<String, File>;
+pub type Files = Vec<(String, File)>;
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct File {
     pub filename: String,
     pub raw_url: String,
@@ -19,7 +19,7 @@ pub struct File {
 #[derive(Deserialize, Debug)]
 pub struct GithubResponse {
     pub description: String,
-    pub files: Files,
+    pub files: BTreeMap<String, File>,
 }
 
 fn parse_header_value(headers: &HeaderMap, name: &str, default: i64) -> i64 {
@@ -68,6 +68,19 @@ fn setup_request_client(token: Option<&str>) -> Result<Client, Error> {
 
 async fn parse_github_response(response: Response) -> Result<Files, String> {
     match response.status().as_u16() {
+        200 => match response.json::<GithubResponse>().await {
+            Ok(res) => {
+                let mut files = Vec::from_iter(res.files);
+                files.sort_by_key(|a| a.1.truncated);
+                Ok(files)
+            },
+            Err(err) => {
+                return Err(format!(
+                    "some error occurred while parsing github response. error: {}",
+                    err
+                ))
+            }
+        },
         403 => {
             let headers = response.headers();
             let request_limit = parse_header_value(headers, "x-ratelimit-remaining", -1);
@@ -80,25 +93,8 @@ async fn parse_github_response(response: Response) -> Result<Files, String> {
                 Err("github sent 403 :( try using a token".to_string())
             }
         }
-        404 => {
-            Err("uh oh, looks like gist id not found".to_string())
-        }
-        200 => match response.json::<GithubResponse>().await {
-            Ok(res) => {
-                Ok(res.files)
-            }
-            Err(err) => {
-                return Err(format!(
-                    "some error occurred while parsing github response. error: {}",
-                    err
-                ))
-            }
-        },
-        _ => {
-            Err(
-                "unknown error occurred while parsing response, please open an issue".to_string(),
-            )
-        }
+        404 => Err("uh oh, looks like gist id not found".to_string()),
+        _ => Err("unknown error occurred while parsing response, please open an issue".to_string()),
     }
 }
 

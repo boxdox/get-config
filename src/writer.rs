@@ -15,16 +15,25 @@ fn write_file(file_path: PathBuf, content: &str) -> Result<(), io::Error> {
 }
 
 pub async fn select_and_write_files(
-    files_list: &Files,
+    files_list: Files,
     token: &str,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let options = files_list.keys().cloned().collect();
-    let selected = MultiSelect::new("select files:", options).prompt()?;
+    let options = files_list.iter().map(|v| &v.0).cloned().collect();
+    let selected_options = MultiSelect::new("select files:", options).prompt()?;
+
+    if selected_options.is_empty() {
+        eprintln!("no files selected, goodbye");
+        return Ok(());
+    }
 
     let current_dir = env::current_dir()?;
 
-    for file in selected {
-        let data = files_list.get(&file).unwrap();
+    let filtered_files: Files = files_list 
+        .into_iter()
+        .filter(|(name, _)| selected_options.contains(name))
+        .collect();
+
+    for (file, data) in filtered_files {
         let file_path = current_dir.join(&file);
         if data.truncated {
             println!("{} is truncated, downloading...", &file);

@@ -2,14 +2,19 @@
 pull your dot configs from a version controlled gists.
 
 ### usage
-download the corresponding binary and run:
+you can download the binary from [releases page](https://github.com/boxdox/get-config/releases), or you can use cargo to build locally and install using:
+```sh
+cargo install --git https://github.com/boxdox/get-config
 ```
+
+after downloading/installing, you can start by running the following command:
+```sh
 get-config
 ```
 it will ask for `gist_id` and optionally a github `token`. these settings will be saved in your home directory (appdata in windows). from then on, it will read from this config file.
 
 if you want to reset this config, you can pass `init` flag, like this:
-```
+```sh
 get-config init
 ```
 
