@@ -21,7 +21,7 @@ fn write_file(file_path: &Path, content: &str) -> Result<(), io::Error> {
 
 pub async fn select_and_write_files(
     files_list: &FilesVec,
-    token: &str,
+    token: Option<&str>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let options = files_list.iter().map(|v| &v.0).collect();
     let selected_options = MultiSelect::new("select files:", options).prompt()?;
@@ -43,7 +43,7 @@ pub async fn select_and_write_files(
         let file_path = current_dir.join(&file);
         if data.truncated {
             println!("{file} is truncated, downloading...");
-            let downloaded_data = download_file(&data.raw_url, Some(token)).await?;
+            let downloaded_data = download_file(&data.raw_url, token).await?;
             write_file(&file_path, &downloaded_data)?;
         } else {
             write_file(&file_path, &data.content)?;

@@ -19,22 +19,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
 
     let cfg = get_config(package_name)?;
-    let gist_id = cfg.gist_id.unwrap();
-    let token = cfg.token.unwrap();
+    let gist_id = cfg
+        .gist_id
+        .expect("gist id not found in config, run `{package_name} init` again. exiting");
+    let token = cfg.token.as_deref();
 
     println!("fetching gist {gist_id}");
 
-    let files = fetch_gist(&gist_id, Some(&token)).await?;
+    let files = fetch_gist(&gist_id, token).await?;
 
     // in rare case, files list can be empty, return early
     if files.is_empty() {
         eprintln!(
-            "looks like there are no files in this gist, try with a different gist with `{package_name} init`"
+            "looks like there are no files in this gist, try a different gist by resetting config with `{package_name} init`"
         );
         return Ok(());
     }
 
-    select_and_write_files(&files, &token).await?;
+    select_and_write_files(&files, token).await?;
 
     Ok(())
 }
