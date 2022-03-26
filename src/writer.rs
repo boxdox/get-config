@@ -36,7 +36,7 @@ pub async fn select_and_write_files(
     for (file, data) in filtered_files {
         let file_path = current_dir.join(&file);
         if data.truncated {
-            println!("{} is truncated, downloading...", &file);
+            println!("{file} is truncated, downloading...");
             let downloaded_data = download_file(&data.raw_url, Some(token)).await?;
             write_file(&file_path, &downloaded_data)?;
         } else {

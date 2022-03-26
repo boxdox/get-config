@@ -22,15 +22,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let gist_id = cfg.gist_id.unwrap();
     let token = cfg.token.unwrap();
 
-    println!("fetching gist {}", gist_id);
+    println!("fetching gist {gist_id}");
 
     let files = fetch_gist(&gist_id, Some(&token)).await?;
 
     // in rare case, files list can be empty, return early
     if files.is_empty() {
         eprintln!(
-            "looks like there are no files in this gist, try with a different gist with `{} init`",
-            &package_name
+            "looks like there are no files in this gist, try with a different gist with `{package_name} init`"
         );
         return Ok(());
     }

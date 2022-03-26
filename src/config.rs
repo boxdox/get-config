@@ -15,7 +15,9 @@ pub fn get_config(package_name: &str) -> Result<Config, InquireError> {
         let gist_id =
             Text::new("please enter a gist_id (this will be saved into a config file)").prompt()?;
         if gist_id.is_empty() {
-            eprintln!("gist id is empty, cannot proceed. re-run this command and enter a valid gist id");
+            eprintln!(
+                "gist id is empty, cannot proceed. re-run this command and enter a valid gist id"
+            );
             process::exit(1);
         }
         cfg.gist_id = Some(gist_id);
@@ -34,6 +36,5 @@ pub fn clear_config(package_name: &str) -> Result<(), confy::ConfyError> {
         gist_id: None,
         token: None,
     };
-    confy::store(package_name, cfg)?;
-    Ok(())
+    confy::store(package_name, cfg)
 }

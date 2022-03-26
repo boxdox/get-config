@@ -3,7 +3,7 @@ use reqwest::{
     Client, Error, Response,
 };
 use serde::Deserialize;
-use std::{time::SystemTime, collections::BTreeMap};
+use std::{collections::BTreeMap, time::SystemTime};
 
 pub type Files = Vec<(String, File)>;
 
@@ -59,7 +59,7 @@ fn setup_request_client(token: Option<&str>) -> Result<Client, Error> {
     // add token as header
     let token = token.unwrap_or("");
     if !token.is_empty() {
-        let header_value = HeaderValue::from_str(format!("token {}", token).as_str()).unwrap();
+        let header_value = HeaderValue::from_str(format!("token {token}").as_str()).unwrap();
         headers.insert(header::AUTHORIZATION, header_value);
     }
 
@@ -73,11 +73,10 @@ async fn parse_github_response(response: Response) -> Result<Files, String> {
                 let mut files = Vec::from_iter(res.files);
                 files.sort_by_key(|a| a.1.truncated);
                 Ok(files)
-            },
+            }
             Err(err) => {
                 return Err(format!(
-                    "some error occurred while parsing github response. error: {}",
-                    err
+                    "some error occurred while parsing github response. error: {err}"
                 ))
             }
         },
@@ -103,7 +102,7 @@ pub async fn fetch_gist(
     token: Option<&str>,
 ) -> Result<Files, Box<dyn std::error::Error>> {
     let client = setup_request_client(token)?;
-    let url = format!("https://api.github.com/gists/{}", gist_id);
+    let url = format!("https://api.github.com/gists/{gist_id}");
     let response = client.get(&url).send().await?;
     Ok(parse_github_response(response).await?)
 }
