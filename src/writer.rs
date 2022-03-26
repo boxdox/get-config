@@ -2,12 +2,12 @@ use inquire::MultiSelect;
 use std::{
     env, fs,
     io::{self, Write},
-    path::PathBuf,
+    path::Path,
 };
 
 use crate::github::{download_file, Files};
 
-fn write_file(file_path: PathBuf, content: &str) -> Result<(), io::Error> {
+fn write_file(file_path: &Path, content: &str) -> Result<(), io::Error> {
     let mut file = fs::File::create(&file_path)?;
     file.write_all(content.as_bytes())?;
     println!("{:?} written", &file_path.file_name().unwrap());
@@ -38,9 +38,9 @@ pub async fn select_and_write_files(
         if data.truncated {
             println!("{} is truncated, downloading...", &file);
             let downloaded_data = download_file(&data.raw_url, Some(token)).await?;
-            write_file(file_path, &downloaded_data)?;
+            write_file(&file_path, &downloaded_data)?;
         } else {
-            write_file(file_path, &data.content)?;
+            write_file(&file_path, &data.content)?;
         }
     }
 
