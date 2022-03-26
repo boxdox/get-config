@@ -19,9 +19,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
 
     let cfg = get_config(package_name)?;
-    let gist_id = cfg
-        .gist_id
-        .expect("gist id not found in config, run `{package_name} init` again. exiting");
+    let gist_id = cfg.gist_id;
     let token = cfg.token.as_deref();
 
     println!("fetching gist {gist_id}");
