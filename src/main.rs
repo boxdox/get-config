@@ -5,10 +5,11 @@ mod writer;
 use crate::config::{clear_config, get_config};
 use crate::github::fetch_gist;
 use crate::writer::select_and_write_files;
+use anyhow::Result;
 use std::env;
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<()> {
     let package_name = env!("CARGO_PKG_NAME");
 
     // check if `init` is passed, if yes, reset the config
