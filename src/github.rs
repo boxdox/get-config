@@ -5,7 +5,8 @@ use reqwest::{
 use serde::Deserialize;
 use std::{collections::BTreeMap, time::SystemTime};
 
-pub type Files = Vec<(String, File)>;
+pub type Files = (String, File);
+pub type FilesVec = Vec<Files>;
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct File {
@@ -66,7 +67,7 @@ fn setup_request_client(token: Option<&str>) -> Result<Client, Error> {
     Client::builder().default_headers(headers).build()
 }
 
-async fn parse_github_response(response: Response) -> Result<Files, String> {
+async fn parse_github_response(response: Response) -> Result<FilesVec, String> {
     match response.status().as_u16() {
         200 => match response.json::<GithubResponse>().await {
             Ok(res) => {
@@ -100,7 +101,7 @@ async fn parse_github_response(response: Response) -> Result<Files, String> {
 pub async fn fetch_gist(
     gist_id: &str,
     token: Option<&str>,
-) -> Result<Files, Box<dyn std::error::Error>> {
+) -> Result<FilesVec, Box<dyn std::error::Error>> {
     let client = setup_request_client(token)?;
     let url = format!("https://api.github.com/gists/{gist_id}");
     let response = client.get(&url).send().await?;

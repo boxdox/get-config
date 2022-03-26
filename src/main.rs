@@ -34,7 +34,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         return Ok(());
     }
 
-    select_and_write_files(files, &token).await?;
+    select_and_write_files(&files, &token).await?;
 
     Ok(())
 }

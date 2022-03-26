@@ -5,7 +5,7 @@ use std::{
     path::Path,
 };
 
-use crate::github::{download_file, Files};
+use crate::github::{download_file, Files, FilesVec};
 
 fn write_file(file_path: &Path, content: &str) -> Result<(), io::Error> {
     let mut file = fs::File::create(&file_path)?;
@@ -15,10 +15,10 @@ fn write_file(file_path: &Path, content: &str) -> Result<(), io::Error> {
 }
 
 pub async fn select_and_write_files(
-    files_list: Files,
+    files_list: &FilesVec,
     token: &str,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let options = files_list.iter().map(|v| &v.0).cloned().collect();
+    let options = files_list.iter().map(|v| &v.0).collect();
     let selected_options = MultiSelect::new("select files:", options).prompt()?;
 
     if selected_options.is_empty() {
@@ -28,9 +28,10 @@ pub async fn select_and_write_files(
 
     let current_dir = env::current_dir()?;
 
-    let filtered_files: Files = files_list 
-        .into_iter()
-        .filter(|(name, _)| selected_options.contains(name))
+    // collect vec of references after filtering
+    let filtered_files: Vec<&Files> = files_list
+        .iter()
+        .filter(|(name, _)| selected_options.contains(&name))
         .collect();
 
     for (file, data) in filtered_files {
