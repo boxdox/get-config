@@ -5,10 +5,11 @@ mod writer;
 use crate::config::{clear_config, get_config};
 use crate::github::fetch_gist;
 use crate::writer::select_and_write_files;
+use anyhow::Result;
 use std::env;
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<()> {
     let package_name = env!("CARGO_PKG_NAME");
 
     // check if `init` is passed, if yes, reset the config
@@ -19,23 +20,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
 
     let cfg = get_config(package_name)?;
-    let gist_id = cfg.gist_id.unwrap();
-    let token = cfg.token.unwrap();
+    let gist_id = cfg.gist_id;
+    let token = cfg.token.as_deref();
 
-    println!("fetching gist {}", gist_id);
+    println!("fetching gist {gist_id}");
 
-    let files = fetch_gist(&gist_id, Some(&token)).await?;
+    let files = fetch_gist(&gist_id, token).await?;
 
     // in rare case, files list can be empty, return early
     if files.is_empty() {
         eprintln!(
-            "looks like there are no files in this gist, try with a different gist with `{} init`",
-            &package_name
+            "looks like there are no files in this gist, try a different gist by resetting config with `{package_name} init`"
         );
         return Ok(());
     }
 
-    select_and_write_files(files, &token).await?;
+    select_and_write_files(&files, token).await?;
 
     Ok(())
 }
