@@ -8,9 +8,14 @@ use std::{
 use crate::github::{download_file, Files, FilesVec};
 
 fn write_file(file_path: &Path, content: &str) -> Result<(), io::Error> {
-    let mut file = fs::File::create(&file_path)?;
+    let mut file = fs::File::create(file_path)?;
+    let file_name = file_path
+        .file_name()
+        .expect("could not find a filename from the path")
+        .to_str()
+        .expect("could not convert filename to string");
     file.write_all(content.as_bytes())?;
-    println!("{:?} written", &file_path.file_name().unwrap());
+    println!("'{file_name}' written");
     Ok(())
 }
 
