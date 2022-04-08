@@ -219,13 +219,14 @@ dependencies = [
 
 [[package]]
 name = "get-config"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "confy",
  "inquire",
  "reqwest",
  "serde",
+ "serde-tuple-vec-map",
  "serde_json",
  "tokio",
 ]
@@ -784,6 +785,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ce31e24b01e1e524df96f1c2fdd054405f8d7376249a5110886fb4b658484789"
 dependencies = [
  "serde_derive",
+]
+
+[[package]]
+name = "serde-tuple-vec-map"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a04d0ebe0de77d7d445bb729a895dcb0a288854b267ca85f030ce51cdc578c82"
+dependencies = [
+ "serde",
 ]
 
 [[package]]

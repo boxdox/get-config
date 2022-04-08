@@ -4,7 +4,7 @@ use reqwest::{
     Client, Response,
 };
 use serde::Deserialize;
-use std::{collections::BTreeMap, time::SystemTime};
+use std::time::SystemTime;
 
 pub type Files = (String, File);
 pub type FilesVec = Vec<Files>;
@@ -21,7 +21,8 @@ pub struct File {
 #[derive(Deserialize, Debug)]
 pub struct GithubResponse {
     pub description: String,
-    pub files: BTreeMap<String, File>,
+    #[serde(with = "tuple_vec_map")]
+    pub files: Vec<(String, File)>,
 }
 
 fn parse_header_value(headers: &HeaderMap, name: &str, default: i64) -> i64 {
@@ -77,7 +78,7 @@ async fn parse_github_response(response: Response) -> Result<FilesVec> {
     match response.status().as_u16() {
         200 => match response.json::<GithubResponse>().await {
             Ok(res) => {
-                let mut files = Vec::from_iter(res.files);
+                let mut files = res.files;
                 files.sort_by_key(|a| a.1.truncated);
                 Ok(files)
             }
